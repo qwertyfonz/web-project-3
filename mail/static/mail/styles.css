@@ -1,3 +1,29 @@
 textarea {
     min-height: 400px;
 }
+
+table, tr {
+  border: 1px solid black;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#sender {
+    font-weight: bold;
+}
+
+#subject {
+    text-align: left;
+    width: 60%;
+}
+
+#timestamp {
+    text-align: right;
+    color: grey;
+}
+
+label {
+    font-weight: bold;
+}
+
+
