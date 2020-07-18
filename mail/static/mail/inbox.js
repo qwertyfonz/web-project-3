@@ -179,6 +179,7 @@ function print_email (mailbox, emailContainer, email) {
 
 // Allow user to write a reply to an email
 function replyEmail(email) {
+  
   document.querySelector('#emails-view').style.display  = 'none';
   document.querySelector('#compose-view').style.display = 'block';
   document.querySelector('#view-email').style.display   = 'none';
@@ -211,7 +212,7 @@ function updateEmailProperties(email_id, updateValue) {
 
 // Update an email's archived status (calls the updateEmailProperties function to update) and reloads main inbox after
 function updateArchivedEmail(email_id, updateValue) { 
-  
+
   updateEmailProperties(email_id, updateValue);
   load_mailbox('inbox');
 }
