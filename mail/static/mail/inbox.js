@@ -22,50 +22,43 @@ function compose_email() {
   document.querySelector('#compose-recipients').value   = '';
   document.querySelector('#compose-subject').value      = '';
   document.querySelector('#compose-body').value         = '';
-  //document.querySelector('#mailbox').value              ='sent';
 
+  // Send email on click
   document.querySelector('#submit-button').addEventListener('click', () => send_email());
-  //document.querySelector('#submit-button').addEventListener('click', () => send_email());
 }
 
 
 function load_mailbox(mailbox) {
-  
-  //console.log('mailbox='+ document.querySelector('#mailbox').value);
 
   //Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display  = 'block';
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#view-email').style.display   = 'none';
 
-  //Clear any preloaded emails that were previously loaded
-  document.querySelector('#view-email').innerHTML = '';
-
   //Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
   //Get the contents of an inbox
   get_inbox_content(mailbox);
-  
 }
 
 
-//Fetch contents of an inbox
+//Get contents of an inbox
 function get_inbox_content(mailbox) {  
   
   fetch(`/emails/${mailbox}`)
   .then(response => response.json())
   .then(emails => {
-    create_inbox_view(mailbox,emails);
-  }) // Run create_inbox_view function below 
+    create_inbox_view(mailbox, emails);
+  })  
   //.catch(error => console.log('Failed while getting the mailbox content',error));
 }
 
 
 
-//Take json response from GET request and display as a table
+//Take list of emails from GET request and display as a table
 function create_inbox_view(mailbox, emails) {
-  
+
   let sender;
   let subject;
   let timestamp;
@@ -83,10 +76,10 @@ function create_inbox_view(mailbox, emails) {
     isRead    = emails[i].read;
     emailId   = emails[i].id;
 
-    // Create a new entry (table row) for an email
+    // Create a new entry (table row) for an email and set default background as white
     let tr = document.createElement('tr');
-    tr.setAttribute('id', 'mailbox_tr');//set tr id
-    tr.style.backgroundColor = "white";// Set default color as white
+    tr.setAttribute('id', 'mailbox_tr');
+    tr.style.backgroundColor = 'white';
     
     // Declare a closure to pass a local-scoped index variable (info from: https://softauthor.com/javascript-add-click-event-listener-in-a-loop/#use-foreach-instead-of-for)
     tr.addEventListener('click', function(index) {
@@ -97,7 +90,7 @@ function create_inbox_view(mailbox, emails) {
    
     // If the email is already read, make its background light grey
     if (isRead) {
-      tr.style.backgroundColor = "lightgrey";
+      tr.style.backgroundColor = 'lightgrey';
     }
 
     // Create a new row element for the sender and append it to the row
@@ -125,83 +118,63 @@ function create_inbox_view(mailbox, emails) {
 }
 
 
-function print_email (mailbox, emailContainer, email) {
+//To view the email
+function view_email(mailbox, email) {  
   
-  //Create table data elements
-  let fromTd      = document.createElement('td');
-  let toTd        = document.createElement('td');
-  let subjectTd   = document.createElement('td');
-  let timestampTd = document.createElement('td');
-  let bodyTd      = document.createElement('td');
-  let buttonsTd   = document.createElement('td');
-  let hr          = document.createElement('hr');
+  // Show the email and hide other views
+  document.querySelector('#emails-view').style.display  = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  let emailContainer            = document.querySelector('#view-email');
+  emailContainer.style.display  = 'block';
 
-  //Set table data values
-  fromTd.innerHTML      = '<b>From:</b> ' + email.sender;
-  toTd.innerHTML        = '<b>To:</b> ' + email.recipients;
-  subjectTd.innerHTML   = '<b>Subject:</b> ' + email.subject;
-  timestampTd.innerHTML = '<b>Timestamp:</b> ' + email.timestamp;
-  bodyTd.innerHTML      = email.body;
-
-   
-  //Create table rows
-  let fromTr      = document.createElement('tr'); 
-  let toTr        = document.createElement('tr');
-  let subjectTr   = document.createElement('tr'); 
-  let timestampTr = document.createElement('tr'); 
-  let buttonsTr   = document.createElement('tr');
-
-  
-  //Create buttons 
-  let replyButton    = document.createElement('button');
-  replyButton.setAttribute('class','btn btn-primary');
-  replyButton.innerHTML  ='Reply';
-  replyButton.addEventListener('click', () => replyEmail(email));
-  buttonsTd.appendChild(replyButton);
-
-  if (mailbox != 'sent') { 
-    let archiveButton  = document.createElement('button');
-    archiveButton.setAttribute('class', 'btn btn-primary');
-    archiveButton.setAttribute('id', 'archive-button');
-    archiveButton.innerHTML = 'Archive';
-    archiveButton.addEventListener('click', () => updateArchive(email.id, true));
-    //archiveButton.onclick = updateArchive(email.id, true);
-
-    if (email.archived) {
-      archiveButton.innerHTML = 'Unarchive';
-      archiveButton.addEventListener('click', () => updateArchive(email.id, false));
-      //archiveButton.onclick = updateArchive(email.id, false);
-    }
-
-    buttonsTd.appendChild(archiveButton);
-  }
-  
-  buttonsTr.appendChild(buttonsTd);
-
-  //Add columns into the rows
-  fromTr.appendChild(fromTd);
-  toTr.appendChild(toTd);  
-  subjectTr.appendChild(subjectTd);
-  timestampTr.appendChild(timestampTd); 
-
-
-  //Create table content
-  let table = document.createElement('table'); 
-  table.setAttribute('id', 'email_header');
-
-  //Add rows into the table
-  table.appendChild(fromTr);
-  table.appendChild(toTr);
-  table.appendChild(subjectTr);
-  table.appendChild(timestampTr);
-  table.appendChild(buttonsTr);
-      
-  //Add table content into html container(div)
-  emailContainer.appendChild(table);
-  emailContainer.appendChild(hr);
-  emailContainer.appendChild(bodyTd);
-   
+  // Fetch a specific email and print it
+  fetch(`/emails/${email.id}`)
+  .then(response => response.json())
+  .then(email => print_email(mailbox, emailContainer, email));
 }
+
+// Displays a given email
+function print_email (mailbox, emailContainer, email) {
+
+  // Create a reply button and loads compose form pre-filled on click
+  let replyButton           = document.querySelector('#reply_button');
+  replyButton.style.display = 'inline';
+  replyButton.addEventListener('click', () => replyEmail(email));
+
+  // Create archive/unarchive buttons
+  let archiveButton    = document.querySelector('#archive_button');
+  let unArchiveButton  = document.querySelector('#unarchive_button'); 
+  
+  // If the email is not archived, then show archive button; else, show the unarchive button and hide archive
+  if (!email.archived) {
+    archiveButton.style.display   = 'inline';
+    unArchiveButton.style.display = 'none';
+    archiveButton.addEventListener('click', () => updateArchivedEmail(email.id,{archived:true}))
+  } else {
+    unArchiveButton.style.display   = 'inline';
+    archiveButton.style.display     = 'none';
+    unArchiveButton.addEventListener('click', () => updateArchivedEmail(email.id,{archived:false}))
+  }
+
+  // Set the innerHTML of the contents of the email
+  document.querySelector('#from_td').innerHTML      = '<b>From:</b> ' + email.sender;
+  document.querySelector('#to_td').innerHTML        = '<b>To:</b> ' + email.recipients;
+  document.querySelector('#subject_td').innerHTML   = '<b>Subject:</b> ' + email.subject;
+  document.querySelector('#timestamp_td').innerHTML = '<b>Timestamp:</b> ' + email.timestamp; 
+  document.querySelector('#email_body').innerHTML   = email.body;
+  console.log(document.querySelector('#email_body'));
+  
+  //Mark email as read
+  if (!email.read) { 
+    updateEmailProperties(email.id, {read:true});
+  }
+
+  // Do not display the archive button if in sent inbox
+  if (mailbox === 'sent') {
+    document.querySelector('#archive_button').style.display  = 'none';
+  }
+}
+
 
 // Allow user to write a reply to an email
 function replyEmail(email) {
@@ -220,49 +193,29 @@ function replyEmail(email) {
   document.querySelector('#compose-subject').value      = `Re: ${emailSubject}`;
   document.querySelector('#compose-body').value         = `On ${email.timestamp} ${email.sender} wrote: \n ${email.body}`;
 
+  // Send email on click
   document.querySelector('#submit-button').addEventListener('click', () => send_email());
 }
 
+
 // Mark a given email as read
-function markAsRead (email_id) {  
+function updateEmailProperties(email_id, updateValue) {  
+
+  // Send put request to update read status
   fetch(`/emails/${email_id}`,{
     method: 'PUT',
-    body: JSON.stringify({read: true})
+    body: JSON.stringify(updateValue)
   })
+  .catch(console.warn('error while updating the email'));
 }
 
-// Mark a given email as archived
-function updateArchive (email_id, trueOrFalse) {  
-
-  fetch(`/emails/${email_id}`, {
-    method: 'PUT',
-    body: JSON.stringify({archived: trueOrFalse})
-  })
-
-  document.querySelector('#archive-button').onclick = load_mailbox('inbox'); //window.location.reload();
-}
-
-
-//To view the email
-function view_email(mailbox, email) {  
+// 
+function updateArchivedEmail(email_id, updateValue){
   
-  // Show the email and hide other views
-  document.querySelector('#emails-view').style.display  = 'none';
-  document.querySelector('#compose-view').style.display = 'none';
-  let emailContainer            = document.querySelector('#view-email');
-  emailContainer.style.display  = 'block';
-
-  // Fetch a specific email and print it
-  fetch(`/emails/${email.id}`)
-  .then(response => response.json())
-  .then(email => print_email(mailbox, emailContainer, email));
-
-  //Mark email as read
-  if (!email.read) { 
-    markAsRead(email.id);
-  }
+  updateEmailProperties(email_id, updateValue);
+  load_mailbox('inbox');
+  location.reload();
 }
-
 
 //To compose and send an email
 function send_email() {
