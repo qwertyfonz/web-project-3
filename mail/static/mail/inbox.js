@@ -58,7 +58,7 @@ function get_inbox_content(mailbox) {
   .then(emails => {
     create_inbox_view(mailbox,emails);
   }) // Run create_inbox_view function below 
-  .catch(error => console.log('Failed while getting the mailbox content',error));
+  //.catch(error => console.log('Failed while getting the mailbox content',error));
 }
 
 
@@ -175,9 +175,6 @@ function print_email (mailbox, emailContainer, email) {
 
     buttonsTd.appendChild(archiveButton);
   }
-
-  //archiveButton.removeEventListener('click');
-
   
   buttonsTr.appendChild(buttonsTd);
 
@@ -206,16 +203,19 @@ function print_email (mailbox, emailContainer, email) {
    
 }
 
+// Allow user to write a reply to an email
 function replyEmail(email) {
   document.querySelector('#emails-view').style.display  = 'none';
   document.querySelector('#compose-view').style.display = 'block';
   document.querySelector('#view-email').style.display   = 'none';
 
+  // Detect if the subject line already starts with 'Re:'
   let emailSubject = email.subject;
   if (emailSubject.startsWith('Re: ')) {
     emailSubject = emailSubject.slice(4);
   }
 
+  // Prepopulate form with given information
   document.querySelector('#compose-recipients').value   = `${email.sender}`;
   document.querySelector('#compose-subject').value      = `Re: ${emailSubject}`;
   document.querySelector('#compose-body').value         = `On ${email.timestamp} ${email.sender} wrote: \n ${email.body}`;
@@ -233,27 +233,13 @@ function markAsRead (email_id) {
 
 // Mark a given email as archived
 function updateArchive (email_id, trueOrFalse) {  
-  /*
-  var jsonObj = {archived: true};
-  if (!trueOrFalse) {
-    jsonObj = {archived: false};
-  }*/
 
   fetch(`/emails/${email_id}`, {
     method: 'PUT',
     body: JSON.stringify({archived: trueOrFalse})
   })
-  /*.then(response => response.json())
-  .then(result => {
-    console.log('result='+result);
-    load_mailbox('inbox');
-  })
-  .catch(error => {
-    console.log(error);
-  });*/
 
   document.querySelector('#archive-button').onclick = load_mailbox('inbox'); //window.location.reload();
-  
 }
 
 
@@ -301,5 +287,4 @@ function send_email() {
     // Load sent mailbox when email is sent
     load_mailbox('sent');
   })
-  //.catch(error=>console.warn('Error while sending the email. ', error))
 }
