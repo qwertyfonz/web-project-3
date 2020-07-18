@@ -27,6 +27,10 @@
             <button class="btn btn-primary" id="reply_button">Reply</button>        
             <button class="btn btn-primary" id="archive_button">Archive</button>
             <button class="btn btn-primary" id="unarchive_button">Unarchive</button>
+            <br>
+            <i>**We looked at the archive/send functions during office hours with regards to the 'database is locked' error; it works sometimes, but sometimes will require a page refresh to work too</i>
+            <br>
+            <i>**There was an issue of SQLite not being able to support concurrency, or something like that was discussed in an Ed post. The best workaround for now would be to wait for the database connection to timeout before refreshing/trying again</i>
         </div>
         <hr>
         <div id="email_body"></div>
@@ -47,7 +51,6 @@
                 <input class="form-control" id="compose-subject" placeholder="Subject">
             </div>
             <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
-            <!-- <input type="submit" class="btn btn-primary" value="Submit" id="submit-button"> -->
             <input type="button" class="btn btn-primary" value="Submit" id="submit-button">
         </form>
     </div>

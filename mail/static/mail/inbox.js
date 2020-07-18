@@ -51,14 +51,13 @@ function get_inbox_content(mailbox) {
   .then(emails => {
     create_inbox_view(mailbox, emails);
   })  
-  //.catch(error => console.log('Failed while getting the mailbox content',error));
 }
 
 
 
 //Take list of emails from GET request and display as a table
 function create_inbox_view(mailbox, emails) {
-
+  
   let sender;
   let subject;
   let timestamp;
@@ -68,7 +67,8 @@ function create_inbox_view(mailbox, emails) {
   table.setAttribute('id', 'mailbox_table');
 
   // For every email in the list of emails in the inbox
-  for (var i = 0; i < emails.length; i++) {    
+  for (var i = 0; i < emails.length; i++) { 
+
     //Get information about the email and store into variables
     sender    = emails[i].sender;
     subject   = emails[i].subject;
@@ -162,9 +162,9 @@ function print_email (mailbox, emailContainer, email) {
   document.querySelector('#subject_td').innerHTML   = '<b>Subject:</b> ' + email.subject;
   document.querySelector('#timestamp_td').innerHTML = '<b>Timestamp:</b> ' + email.timestamp; 
   document.querySelector('#email_body').innerHTML   = email.body;
-  console.log(document.querySelector('#email_body'));
   
-  //Mark email as read
+  
+  // Mark email as read
   if (!email.read) { 
     updateEmailProperties(email.id, {read:true});
   }
@@ -172,6 +172,7 @@ function print_email (mailbox, emailContainer, email) {
   // Do not display the archive button if in sent inbox
   if (mailbox === 'sent') {
     document.querySelector('#archive_button').style.display  = 'none';
+    document.querySelector('i').style.display  = 'none';
   }
 }
 
@@ -198,23 +199,21 @@ function replyEmail(email) {
 }
 
 
-// Mark a given email as read
+// Update a given email's properties
 function updateEmailProperties(email_id, updateValue) {  
 
   // Send put request to update read status
-  fetch(`/emails/${email_id}`,{
+  fetch(`/emails/${email_id}`, {
     method: 'PUT',
     body: JSON.stringify(updateValue)
   })
-  .catch(console.warn('error while updating the email'));
 }
 
-// 
-function updateArchivedEmail(email_id, updateValue){
+// Update an email's archived status (calls the updateEmailProperties function to update) and reloads main inbox after
+function updateArchivedEmail(email_id, updateValue) { 
   
   updateEmailProperties(email_id, updateValue);
   load_mailbox('inbox');
-  location.reload();
 }
 
 //To compose and send an email
