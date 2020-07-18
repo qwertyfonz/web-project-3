@@ -2,10 +2,14 @@ textarea {
     min-height: 400px;
 }
 
-table, tr {
+#mailbox_table, #mailbox_tr {
   border: 1px solid black;
   border-collapse: collapse;
   width: 100%;
+}
+
+#email_header{
+    border: none
 }
 
 #sender {
@@ -26,4 +30,7 @@ label {
     font-weight: bold;
 }
 
+.emailHeader{
+    list-style-type:none
+}
 

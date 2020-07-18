@@ -9,20 +9,36 @@
     <button class="btn btn-sm btn-outline-primary" id="sent">Sent</button>
     <button class="btn btn-sm btn-outline-primary" id="archived">Archived</button>
     <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
+    <input type=hidden id="mailbox" value=''>
     <hr>
 
     
-    <div id="emails-view">
-    </div>
+    <div id="emails-view"></div>
 
     <div id="view-email">
+        <!--
+        View Email
+        <table id="email_hdr">
+            <tr><td id="from_td"></td></tr>
+            <tr><td id="to-td"></td></tr>
+            <tr><td id="subject-td"></td></tr>
+            <tr><td id="timestamp-td"></td></tr>
+        </table>
+    
+        <div id="email-buttons">
+            <button class="btn btn-primary">Reply</button>
+            <button class="btn btn-primary">Archive</button>
+        </div>
+        <div id="email-body"></div>
+        <hr>
+    -->
     </div>
     
 
     <div id="compose-view">
         <h3>New Email</h3>
         <form id="compose-form">
-            <input type="hidden" value="sent"/>
+            <input type=hidden id="mailbox"/>
             <div class="form-group">
                 From: <input disabled class="form-control" value="{{ request.user.email }}">
             </div>
@@ -34,7 +50,7 @@
             </div>
             <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
             <!-- <input type="submit" class="btn btn-primary" value="Submit" id="submit-button"> -->
-            <input type="submit" class="btn btn-primary" value="Submit" id="submit-button">
+            <input type="button" class="btn btn-primary" value="Submit" id="submit-button">
         </form>
     </div>
 {% endblock %}
